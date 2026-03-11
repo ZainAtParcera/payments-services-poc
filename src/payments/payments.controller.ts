@@ -39,11 +39,11 @@ import { Permissions } from '../auth/permissions.decorator';
  * Base: /payments/merchants
  *
  * RBAC: All routes are guarded by PermissionsGuard.
- * Each handler requires the corresponding `nmi_merchants.<action>` permission,
+ * Each handler requires the corresponding `payments_merchants.<action>` permission,
  * which must be present in request.user.permissions (populated by the auth layer).
  *
  * Permission model:
- *   Resource : nmi_merchants
+ *   Resource : payments_merchants
  *   Actions  : create | list | show | update | delete | update_status
  *
  * The resource name `nmi_merchants` is a RBAC identifier only — it does not
@@ -60,13 +60,13 @@ export class PaymentsController {
     // -------------------------------------------------------------------------
     @Post(':parceraId/setup')
     @HttpCode(HttpStatus.CREATED)
-    @Permissions('nmi_merchants.create')
+    @Permissions('payments_merchants.create')
     @ApiOperation({
         summary: 'Setup Merchant',
         description:
             'Creates a merchant account with the configured payment provider, activates it, ' +
             'and returns the provider-assigned gateway ID. ' +
-            'Requires permission: `nmi_merchants.create`.',
+            'Requires permission: `payments_merchants.create`.',
     })
     @ApiParam({ name: 'parceraId', description: 'Parcera merchant UUID', example: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' })
     @ApiQuery({ name: 'tenantId', required: true, description: 'Tenant UUID', example: 'b1ffcd00-1c2b-4baf-9e6b-7cc8ce491b22' })
@@ -86,7 +86,7 @@ export class PaymentsController {
     })
     @ApiResponse({ status: 400, description: 'Invalid request body or missing tenantId' })
     @ApiResponse({ status: 404, description: 'Merchant or tenant not found' })
-    @ApiForbiddenResponse({ description: 'Missing permission: nmi_merchants.create' })
+    @ApiForbiddenResponse({ description: 'Missing permission: payments_merchants.create' })
     async setupMerchant(
         @Param('parceraId', ParseUUIDPipe) parceraId: string,
         @Query('tenantId', ParseUUIDPipe) tenantId: string,
@@ -99,12 +99,12 @@ export class PaymentsController {
     // GET /payments/merchants
     // -------------------------------------------------------------------------
     @Get()
-    @Permissions('nmi_merchants.list')
+    @Permissions('payments_merchants.list')
     @ApiOperation({
         summary: 'List Merchants',
         description:
             'Retrieve a list of merchants from the configured payment provider. ' +
-            'Requires permission: `nmi_merchants.list`.',
+            'Requires permission: `payments_merchants.list`.',
     })
     @ApiQuery({ name: 'maxResults', required: false, type: Number, example: 50, description: 'Max number of results to return' })
     @ApiResponse({
@@ -121,7 +121,7 @@ export class PaymentsController {
             },
         },
     })
-    @ApiForbiddenResponse({ description: 'Missing permission: nmi_merchants.list' })
+    @ApiForbiddenResponse({ description: 'Missing permission: payments_merchants.list' })
     async listMerchants(
         @Query('maxResults', new DefaultValuePipe(50), ParseIntPipe) maxResults: number,
     ) {
@@ -132,17 +132,17 @@ export class PaymentsController {
     // GET /payments/merchants/:gatewayMerchantId
     // -------------------------------------------------------------------------
     @Get(':gatewayMerchantId')
-    @Permissions('nmi_merchants.show')
+    @Permissions('payments_merchants.show')
     @ApiOperation({
         summary: 'Get Merchant',
         description:
             'Fetch a single merchant by their provider-assigned gateway ID. ' +
-            'Requires permission: `nmi_merchants.show`.',
+            'Requires permission: `payments_merchants.show`.',
     })
     @ApiParam({ name: 'gatewayMerchantId', description: 'Provider-assigned merchant gateway ID', example: '1238420' })
     @ApiResponse({ status: 200, description: 'Merchant details returned successfully' })
     @ApiResponse({ status: 404, description: 'Merchant not found at the payment provider' })
-    @ApiForbiddenResponse({ description: 'Missing permission: nmi_merchants.show' })
+    @ApiForbiddenResponse({ description: 'Missing permission: payments_merchants.show' })
     async getMerchant(@Param('gatewayMerchantId') gatewayMerchantId: string) {
         try {
             return await this.paymentsService.getMerchant(gatewayMerchantId);
@@ -155,18 +155,18 @@ export class PaymentsController {
     // PATCH /payments/merchants/:gatewayMerchantId
     // -------------------------------------------------------------------------
     @Patch(':gatewayMerchantId')
-    @Permissions('nmi_merchants.update')
+    @Permissions('payments_merchants.update')
     @ApiOperation({
         summary: 'Update Merchant',
         description:
             'Update merchant details (name, address, contact) at the configured payment provider. ' +
-            'Requires permission: `nmi_merchants.update`.',
+            'Requires permission: `payments_merchants.update`.',
     })
     @ApiParam({ name: 'gatewayMerchantId', description: 'Provider-assigned merchant gateway ID', example: '1238420' })
     @ApiBody({ type: UpdateMerchantDto })
     @ApiResponse({ status: 200, description: 'Merchant updated successfully' })
     @ApiResponse({ status: 404, description: 'Merchant not found at the payment provider' })
-    @ApiForbiddenResponse({ description: 'Missing permission: nmi_merchants.update' })
+    @ApiForbiddenResponse({ description: 'Missing permission: payments_merchants.update' })
     async updateMerchant(
         @Param('gatewayMerchantId') gatewayMerchantId: string,
         @Body() dto: UpdateMerchantDto,
@@ -179,17 +179,17 @@ export class PaymentsController {
     // -------------------------------------------------------------------------
     @Delete(':gatewayMerchantId')
     @HttpCode(HttpStatus.OK)
-    @Permissions('nmi_merchants.delete')
+    @Permissions('payments_merchants.delete')
     @ApiOperation({
         summary: 'Delete Merchant',
         description:
             'Permanently delete a merchant account at the configured payment provider. ' +
-            'Requires permission: `nmi_merchants.delete`.',
+            'Requires permission: `payments_merchants.delete`.',
     })
     @ApiParam({ name: 'gatewayMerchantId', description: 'Provider-assigned merchant gateway ID', example: '1238420' })
     @ApiResponse({ status: 200, description: 'Merchant deleted successfully' })
     @ApiResponse({ status: 404, description: 'Merchant not found at the payment provider' })
-    @ApiForbiddenResponse({ description: 'Missing permission: nmi_merchants.delete' })
+    @ApiForbiddenResponse({ description: 'Missing permission: payments_merchants.delete' })
     async deleteMerchant(@Param('gatewayMerchantId') gatewayMerchantId: string) {
         return this.paymentsService.deleteMerchant(gatewayMerchantId);
     }
@@ -198,12 +198,12 @@ export class PaymentsController {
     // PATCH /payments/merchants/:gatewayMerchantId/status
     // -------------------------------------------------------------------------
     @Patch(':gatewayMerchantId/status')
-    @Permissions('nmi_merchants.update_status')
+    @Permissions('payments_merchants.update_status')
     @ApiOperation({
         summary: 'Update Merchant Status',
         description:
             'Update the operational status of a merchant (active | test | suspended | closed). ' +
-            'Requires permission: `nmi_merchants.update_status`.',
+            'Requires permission: `payments_merchants.update_status`.',
     })
     @ApiParam({ name: 'gatewayMerchantId', description: 'Provider-assigned merchant gateway ID', example: '1238420' })
     @ApiBody({ type: UpdateMerchantStatusDto })
@@ -213,7 +213,7 @@ export class PaymentsController {
         schema: { example: { id: '1238420', status: 'suspended', company: 'Simply South Restaurant' } },
     })
     @ApiResponse({ status: 404, description: 'Merchant not found at the payment provider' })
-    @ApiForbiddenResponse({ description: 'Missing permission: nmi_merchants.update_status' })
+    @ApiForbiddenResponse({ description: 'Missing permission: payments_merchants.update_status' })
     async updateMerchantStatus(
         @Param('gatewayMerchantId') gatewayMerchantId: string,
         @Body() dto: UpdateMerchantStatusDto,
