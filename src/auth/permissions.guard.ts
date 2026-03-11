@@ -19,7 +19,7 @@ import { PERMISSIONS_KEY } from './permissions.decorator';
  *  - Throws ForbiddenException if any required permission is missing.
  *
  * Example user shape expected from auth layer:
- *   { id: 'uuid', email: '...', permissions: ['nmi_merchants.list', 'nmi_merchants.show'] }
+ *   { id: 'uuid', email: '...', permissions: ['payments_merchants.list', 'payments_merchants.show'] }
  */
 @Injectable()
 export class PermissionsGuard implements CanActivate {
