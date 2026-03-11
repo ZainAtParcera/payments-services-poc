@@ -1,0 +1,1 @@
+export declare const MERCHANT_PROVIDER = "MERCHANT_PROVIDER";

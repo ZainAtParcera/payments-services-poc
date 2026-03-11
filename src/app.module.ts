@@ -1,0 +1,15 @@
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { PaymentsModule } from './payments/payments.module';
+
+@Module({
+  imports: [
+    // Load .env at the root level and make it globally available
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
+    PaymentsModule,
+  ],
+})
+export class AppModule { }
